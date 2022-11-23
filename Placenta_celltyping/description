@@ -18,3 +18,6 @@ III). Placenta_scVI_controls_exploratory_celltyping_LV15_S3.ipynb:
 Exploratory analysis of the Leiden clusters- using known markers, LDA & qualitative visualization of integration (data structures). 
 
 IV). Placenta_controls_clustering_exploratory_LV15_S4.ipynb: 
+Mapping of the Leiden clusters to a cell type/state annotation based on marker analysis of the control villi. 
+Note that, certain annotations were refined later based on trajectory analysis and further investigation. 
+Notebooks from step III & IV are separately shown for visualizing the ground work went into the analysis. 
