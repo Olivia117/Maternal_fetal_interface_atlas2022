@@ -22,7 +22,8 @@ Mapping of the Leiden clusters to a cell type/state annotation based on marker a
 Note that, certain annotations were refined later based on trajectory analysis and further investigation. 
 Notebooks from step III & IV are separately shown for visualizing the ground work went into the analysis. 
 
-V). 
+V). Trajectory_analysis_trophoblasts_22032022.ipynb: 
+Reconstruction of trophoblast differentiation using STREAM & finding pseudotime based marker genes. 
 
 VI). SP014_SP082_SP136_placenta_scvi_harmonization_25032022.py:
 Data harmonization of all placenta samples (SP014, SP082 & SP136) using single-cell variational inference (scVI): a scalable framework for the 
@@ -42,3 +43,8 @@ Nat Methods 19, 41–50 (2022). https://doi.org/10.1038/s41592-021-01336-8
 
 P.S: The term harmonization (rather than batch effect correction) emerged to emphasize that the input transcriptomic datasets may come from 
 very different sources (e.g., tech/lab/library chemistry) and from samples with a different cell type/state composition. 
+
+VII). Placenta_marker_analysis_LogisticRegression_290322.r:
+Placenta cell type/state marker analysis using multi-variate Logistic Regression. 
+Corrected for latent variables/confounders such as "nCount_RNA", "nFeature_RNA", "percent.mt" (continuous covariates), ~disease (control vs PE) 
+and library (10X V3 vs 10X V2) to prevent the effects of technical artifacts on DEG selection. 
