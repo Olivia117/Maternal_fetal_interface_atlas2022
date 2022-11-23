@@ -48,3 +48,7 @@ VII). Placenta_marker_analysis_LogisticRegression_290322.r:
 Placenta cell type/state marker analysis using multi-variate Logistic Regression. 
 Corrected for latent variables/confounders such as "nCount_RNA", "nFeature_RNA", "percent.mt" (continuous covariates), ~disease (control vs PE) 
 and library (10X V3 vs 10X V2) to prevent the effects of technical artifacts on DEG selection. 
+
+VIII). Placenta_analysis_manuscript_2022.ipynb: 
+Major manuscript analysis: including UMAP visualization of placenta cell types/states (main figure-1C; villi); tabulating cell type/state composition 
+per conditions & analyzing composition changes between gestational time-points and evaluation of data harmonization (inc. batch-effect correction).
