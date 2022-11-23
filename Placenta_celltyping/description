@@ -1,1 +1,20 @@
 Consists of python scripts & notebooks dedicated towards the analysis of control and pre-eclamptic (diseased) placenta analysis using single nuclei RNA-seq data. 
+
+
+Understanding the order & function of the scripts:
+
+I) Placenta_celltypist_control_predictions_28012022_S1.ipynb:  
+Using CellTypist based automated Logistic regression classifiers optimized by the stochastic gradient descent algorithm. 
+The notebook will enable preliminary cell annotation prediction using our previous snRNA-seq placenta dataset (SP014 cohort; from 2021 submission) as a 
+"training dataset." The test data was newly sequenced early trimester placenta (SP082 cohort; Cellbender filtered for ambient RNA and random barcode swapping). 
+It was restricted to only control (first-trimester) test data as the SP136 disease samples were sequenced later in March'22.
+
+II). Placenta_atlas_integration_controls_LV15_280122_S2.py: 
+Data harmonization of SP014 (control) & SP082 early first-trimester samples and perform differential marker analysis for cell annotations. 
+The analysis was restricted to controls-only because of the earlier availability of these samples (sequenced by January'22). 
+The PE samples were integrated later in April'22 since they were sequenced late. The notebook serves as an initial analysis of control villi. 
+
+III). Placenta_scVI_controls_exploratory_celltyping_LV15_S3.ipynb:
+Exploratory analysis of the Leiden clusters- using known markers, LDA & qualitative visualization of integration (data structures). 
+
+IV). Placenta_controls_clustering_exploratory_LV15_S4.ipynb: 
