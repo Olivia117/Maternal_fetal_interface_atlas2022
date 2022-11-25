@@ -12,4 +12,5 @@ Key contributors (in computational analysis):
    jointly with Daniela S. Valdes (MDC Berlin).
 
 4). In-situ sequencing (ISS) analysis: Sebastian Tiesmeyer (Berlin Institute of Health & Charité). 
-5). 10X visium spatial analysis: Kerim Ali Secener (MDC Berlin). 
+
+5). 10X visium spatial analysis: Kerim Ali Secener (MDC Berlin) with inputs from Olivia Debnath. 
