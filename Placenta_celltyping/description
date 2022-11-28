@@ -13,7 +13,8 @@ II) Placenta_celltypist_control_predictions_28012022_S1.ipynb:
 Using CellTypist based automated Logistic regression classifiers optimized by the stochastic gradient descent algorithm. 
 The notebook will enable (preliminary) cell-annotation prediction using our previous snRNA-seq placenta dataset (SP014 cohort controls; from 2021 submission) as a 
 "training dataset." The test data was newly processed Cellbender data (merged with SP082 early samples) from Step-I. 
-The purpose was mainly to classify the control villi test data (as the SP136 disease samples were sequenced later in March'22).
+The purpose was mainly to classify the control villi test data (as the SP136 disease samples were sequenced later in March'22) & only use a reference to 
+inspect the (unsupervised) Leiden clusters. Hence, the predictions don't refer to final annotations. 
 
 III). Placenta_atlas_integration_controls_LV15_280122_S2.py: 
 Data harmonization of SP014 (control) & SP082 early first-trimester samples and perform differential marker analysis for cell annotations. 
