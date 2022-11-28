@@ -3,29 +3,35 @@ Consists of python scripts & notebooks dedicated towards the analysis of control
 
 Understanding the order & function of the scripts:
 
-I) Placenta_celltypist_control_predictions_28012022_S1.ipynb:  
-Using CellTypist based automated Logistic regression classifiers optimized by the stochastic gradient descent algorithm. 
-The notebook will enable preliminary cell annotation prediction using our previous snRNA-seq placenta dataset (SP014 cohort; from 2021 submission) as a 
-"training dataset." The test data was newly sequenced early trimester placenta (SP082 cohort; Cellbender filtered for ambient RNA and random barcode swapping). 
-It was restricted to only control (first-trimester) test data as the SP136 disease samples were sequenced later in March'22.
+I). SP014_SP082_cellbender_placenta_QC_270122_S0.py: 
+Making a concatenated Cellbender processed, scanpy QC filtered & log-normalized object for SP014 (10X V2) & SP082 (10X V3) object. 
+Metadata store were verified from scRNAseq_metadata_early_controls.xlsx; obtained from Dr. Florian Herse on 13.11.2021. 
+Also, explores the quality control comparison of SP014 and SP082 cohort. 
+The output H5AD file were subsequently used for training & testing (celltypist) below & other downstream analysis. 
 
-II). Placenta_atlas_integration_controls_LV15_280122_S2.py: 
+II) Placenta_celltypist_control_predictions_28012022_S1.ipynb:  
+Using CellTypist based automated Logistic regression classifiers optimized by the stochastic gradient descent algorithm. 
+The notebook will enable (preliminary) cell-annotation prediction using our previous snRNA-seq placenta dataset (SP014 cohort controls; from 2021 submission) as a 
+"training dataset." The test data was newly processed Cellbender data (merged with SP082 early samples) from Step-I. 
+The purpose was mainly to classify the control villi test data (as the SP136 disease samples were sequenced later in March'22).
+
+III). Placenta_atlas_integration_controls_LV15_280122_S2.py: 
 Data harmonization of SP014 (control) & SP082 early first-trimester samples and perform differential marker analysis for cell annotations. 
 The analysis was restricted to controls-only because of the earlier availability of these samples (sequenced by January'22). 
 The PE samples were integrated later in April'22 since they were sequenced late. The notebook serves as an initial analysis of control villi. 
 
-III). Placenta_scVI_controls_exploratory_celltyping_LV15_S3.ipynb:
+IV). Placenta_scVI_controls_exploratory_celltyping_LV15_S3.ipynb:
 Exploratory analysis of the Leiden clusters- using known markers, LDA & qualitative visualization of integration (data structures). 
 
-IV). Placenta_controls_clustering_exploratory_LV15_S4.ipynb: 
+V). Placenta_controls_clustering_exploratory_LV15_S4.ipynb: 
 Mapping of the Leiden clusters to a cell type/state annotation based on marker analysis of the control villi. 
 Note that, certain annotations were refined later based on trajectory analysis and further investigation. 
 Notebooks from step III & IV are separately shown for visualizing the ground work went into the analysis. 
 
-V). Trajectory_analysis_trophoblasts_22032022.ipynb: 
+VI). Trajectory_analysis_trophoblasts_22032022.ipynb: 
 Reconstruction of trophoblast differentiation using STREAM & finding pseudotime based marker genes. 
 
-VI). SP014_SP082_SP136_placenta_scvi_harmonization_25032022.py:
+VII). SP014_SP082_SP136_placenta_scvi_harmonization_25032022.py:
 Data harmonization of all placenta samples (SP014, SP082 & SP136) using single-cell variational inference (scVI): a scalable framework for the 
 probabilistic representation and analysis of gene expression in single cells. scVI uses stochastic optimization and deep neural networks to aggregate 
 information across similar cells and genes and to approximate the distributions that underlie observed expression values. 
@@ -44,11 +50,11 @@ Nat Methods 19, 41–50 (2022). https://doi.org/10.1038/s41592-021-01336-8
 P.S: The term harmonization (rather than batch effect correction) emerged to emphasize that the input transcriptomic datasets may come from 
 very different sources (e.g., tech/lab/library chemistry) and from samples with a different cell type/state composition. 
 
-VII). Placenta_marker_analysis_LogisticRegression_290322.r:
+VIII). Placenta_marker_analysis_LogisticRegression_290322.r:
 Placenta cell type/state marker analysis using multi-variate Logistic Regression. 
 Corrected for latent variables/confounders such as "nCount_RNA", "nFeature_RNA", "percent.mt" (continuous covariates), ~disease (control vs PE) 
 and library (10X V3 vs 10X V2) to prevent the effects of technical artifacts on DEG selection. 
 
-VIII). Placenta_analysis_manuscript_2022.ipynb: 
+IX). Placenta_analysis_manuscript_2022.ipynb: 
 Major manuscript analysis: including UMAP visualization of placenta cell types/states (main figure-1C; villi); tabulating cell type/state composition 
 per conditions & analyzing composition changes between gestational time-points and evaluation of data harmonization (inc. batch-effect correction).
