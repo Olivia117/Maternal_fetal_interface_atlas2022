@@ -18,7 +18,6 @@ Key contributors (in computational analysis):
 
 Understanding the contents:
 1). Placenta_celltyping: The scripts/notebooks dedicated towards data harmonization, batch-effect removal, cell type/state annotation, composition analysis, evaluation of integration & inferring trajectory of placenta villi.
-
 2). Decidua_celltyping: The scripts/notebooks dedicated towards data harmonization, batch-effect removal, cell type/state annotation, composition analysis & evaluation of integration of maternal decidua.
 
 3). RL_interaction_network: Scripts for inferring receptor-ligand interaction from 10X snRNA-seq data. The result files behind each figure generation were marked & explained.
