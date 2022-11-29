@@ -59,3 +59,20 @@ and library (10X V3 vs 10X V2) to prevent the effects of technical artifacts on 
 IX). Placenta_analysis_manuscript_2022.ipynb: 
 Major manuscript analysis: including UMAP visualization of placenta cell types/states (main figure-1C; villi); tabulating cell type/state composition 
 per conditions & analyzing composition changes between gestational time-points and evaluation of data harmonization (inc. batch-effect correction).
+
+X). PE_vs lateC_marker_analysis_LogisticRegression.r: 
+To determine the differentially expressed genes for disease (eoPE) against late controls, the LR framework (implemented Seurat’s FindMarkers function) was applied 
+to respective cell types/states. The number of UMI, #gene counts, percentage of mitochondrial transcripts, and the percentage of sex-specific transcripts per nuclei
+were used as continuous covariates. Importantly, a cell type/state-specific preterm-score was calculated using the significant preterm vs. term DEGs. 
+This was explicitly performed to prevent strong preterm specific effects in the analysis since eoPE arises 6-8 weeks before healthy term. 
+ 
+Since no differential features were separately reported for the vSTB preterm, the other trophoblast genes (reported for vCTB) were used for correction. 
+Additionally, SLIT2 & ROBO1 have been included in the module-score based correction as they are associated with risk for spontaneous preterm birth. 
+Cell type/state-specific labor signatures were considered for correction by extracting the term in-labor vs. no-labor differential genes from respective groups. 
+Only those genes having a log2 fold-change cut-off of 0.25 and expressed in at least 10% of cells within each group were reported as significant, given adjusted 
+p-value < 0.05 (Bonferonni corrected). Both up & down-regulated genes were reported. No cell type/state exhibited a significant composition shift in eoPE 
+relative to the term controls (except for vHBC)- hence, down sampling was only performed for the vHBC. 
+
+For cell types such as vCCT, dEVT, vCTBp, vCTBpf, dDSTB, dPC, dBcells no analysis was performed owing to extreme sparsity in the eoPE group. 
+None of our samples were confounded with a major co-occurring disease. Also, we found no significant differences between maternal age or BMI between 
+our PE and late control groups- hence, a statistical correction was not required. 
