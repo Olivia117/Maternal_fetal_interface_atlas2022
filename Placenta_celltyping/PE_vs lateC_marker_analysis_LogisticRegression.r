@@ -292,13 +292,16 @@ seurat_obj_receiver= subset(data, idents = receiver)
 seurat_obj_receiver = SetIdent(seurat_obj_receiver, value = seurat_obj_receiver[["time"]])
 seurat_obj_receiver
 table(Idents(seurat_obj_receiver))
-preterm_features= c("SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2", "OLFML3", "MT2A", "F3", "DCN", "IGF1")
-seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = preterm_features,
-  col.name = 'preterm_features')
-  smc_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
-           logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA",  "XIST", "preterm_features", "MALAT1", "percent.mt"),
+
+#FB preterm/labor features would apply to dSMC as well. 
+fb_preterm_features= c("PLAC8", "ZBTB16", "IFI27", "SERPINE1", "SOD2", "PTGDS", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2", "OLFML3", "MT2A", "DCN")
+seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = fb_preterm_features, col.name = 'fb_preterm_features')
+
+smc_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
+           logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA",  "XIST", "fb_preterm_features", "MALAT1", "percent.mt"),
            test.use= "LR") %>% rownames_to_column("gene")
-		   write.csv(smc_list, file= "./PE_decidua_markers_logreg/dSMC_PE_vs_lateC_preterm_corrected_040422.csv")
+#Need to double check this file in publication folder or, update Florian about it. 
+write.csv(smc_list, file= "./PE_decidua_markers_logreg/dSMC_PE_vs_lateC_preterm_corrected_040422.csv")
 
 #Part-I: Placenta PE vs term control differentially expressed signatures:
 #Read the placenta/villi RDS file. Converted from anndata H5AD via SeuratDisk.
