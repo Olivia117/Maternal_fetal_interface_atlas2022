@@ -195,7 +195,8 @@ seurat_obj_receiver
 table(Idents(seurat_obj_receiver))
 
 #Extract the LED preterm & labor signatures from Pique-Regi:
-led_features= c("FGL2", "EDN1", "OLFML3", "TXNRD2", "ANKRD1", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2")
+#led_features= c("FGL2", "EDN1", "OLFML3", "TXNRD2", "ANKRD1", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2")
+led_features= c("FGL2", "EDN1", "OLFML3", "TXNRD2", "ANKRD1")
 seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = led_features,
   col.name = 'led_preterm_features')
 
