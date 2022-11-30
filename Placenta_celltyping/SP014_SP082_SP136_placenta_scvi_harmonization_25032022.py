@@ -3,8 +3,6 @@
 
 #Analysis performed by: Olivia Debnath
 #Computational Oncology; Supervisors: Dr. Naveed Ishaque & Prof.Dr.Roland Eils. 
-
-
 import numpy as np
 import pandas as pd
 import scanpy as sc
@@ -12,20 +10,16 @@ import scanpy as sc
 #Set the figure resolution. 
 sc.settings.set_figure_params(dpi=80)
 
-
 #Read the anndata H5AD having the controls plus newly added SP136 PE diseased samples. 
 #Important note (after September'22): Old path /data/analysis/preeclampsia_2019/.. is changed to /dh-projects/preeclampsia_2022/analysis/placenta_atlas_2022/villi_anndata for storage in Eils-HPC cluster. 
 results_placenta= '/data/analysis/preeclampsia_2019/placenta_atlas_2022/villi_anndata/SP014_SP082_SP136_placenta.h5ad'
 adata= sc.read_h5ad(results_placenta)
 adata.layers["counts"]= adata.X #Store the raw data safely to the "count" layer. 
-
 adata.raw= adata #Store the raw data safely.
 sc.pp.normalize_total(adata, target_sum=1e4) #Normalize to depth 10,000: 
 sc.pp.log1p(adata) #Log-transform the data
 
-
 adata.raw.X #Check matrix dimension 
-
 
 #Create a cosmetic copy of the anndata for HVG subselection & data harmonization using scVI. 
 adata_hvg= adata.copy()
@@ -34,7 +28,6 @@ adata_hvg= adata.copy()
 #Setting batch key performs light-weight batch correction to prevent selection of very sample specific genes. 
 sc.pp.highly_variable_genes(adata_hvg, n_top_genes= 6000, batch_key= "donor_id", subset=True)
 adata_hvg.var.index
-
 
 #Import scvi for data harmonization; global seed is automatically set to 0 for reproducibility. 
 import scvi
@@ -49,9 +42,6 @@ import scvi
 scvi.data.setup_anndata(adata_hvg, layer= "counts", batch_key= "donor_id",
                        categorical_covariate_keys= ["time", "gestational_days", "library", "procurement"],
                        continuous_covariate_keys=["n_genes_by_counts", "total_counts", "pct_counts_MT_genes", "XIST-counts"])
-
-
-
 
 #Train the variational autoencoder using LV=15 after encoding the covariates: 
 #Note that the latent variables are not naturally ordered like the PC(s). 
@@ -73,10 +63,8 @@ sc.pp.neighbors(adata_hvg, use_rep="X_scVI")
 sc.tl.leiden(adata_hvg, resolution=2) #over-cluster using Leiden resolution=2. 
 sc.tl.umap(adata_hvg, random_state= 0, maxiter=500)
 
-
 #Visualize the UMAP using following fields: 
 sc.pl.umap(adata_hvg, color= ['celltype_v1', 'leiden', 'library', 'time'], ncols=1)
-
 
 #Qualitatively visualize the integration. Split by gestational time: early, late term controls & preterm diseased. 
 for i in adata_hvg.obs['time'].cat.categories:
@@ -84,14 +72,10 @@ for i in adata_hvg.obs['time'].cat.categories:
     fig= sc.pl.umap(adata_hvg[adata_hvg.obs['time'] == i], color = 'celltype_v1', return_fig=True, title= i+' samples')
     #pdf.savefig(fig)
 
-
-
-
 #Create a cosmetic copy of adata_hvg to check robustness of UMAP (change random_state to 42)
 ldata_umap= adata_hvg.copy() 
 sc.tl.umap(ldata_umap, random_state=42, maxiter=500) 
 sc.pl.umap(ldata_umap, color= ['celltype_v1']) #almost same data structure is obtained. 
-
 
 
 #Create a copy again & increase the min_dist to 0.6 to evaluate vSTBjuv proximity to vVECs. 
@@ -107,14 +91,10 @@ for i in adata_hvg.obs['library'].cat.categories:
     fig= sc.pl.umap(adata_hvg[adata_hvg.obs['library'] == i], color = 'celltype_v1', return_fig=True, title= i+' samples')
     #pdf.savefig(fig)
 
-
-
 #Assign color codes a/c 2021 submission. 
 adata_hvg.uns['celltype_v1_colors']= ['#ff0000', '#c0c999', '#9e1a1a', '#721313', '#5c7aff', '#dec1ff', '#8c29ff',
                                  '#fe6776', '#63264a', '#ff99cc', '#ff0080', '#cc33ff', '#a799b7', '#00b3b3', '#004d4d', 
                                  '#fd96A9']
-
-
 
 
 #Reorder the donor_id so that samples are grouped by early, late term controls followed by preterm PE. 
@@ -123,7 +103,6 @@ adata_hvg.obs['donor_id_reordered']= adata_hvg.obs['donor_id'].cat.reorder_categ
 'Donor11', 'Donor12', 'Donor34', 'Donor37', 'Donor38', 'Donor39', 'Donor41', 'Donor-327-villi', 'Donor-328-villi', 'Donor-372-villi',
 'Donor-Term01', 'Donor-Term02', 'Donor-Term03', 'Donor-389-villi', 'Donor-419-villi', 'Donor-557_1-villi', 'Donor-557_2-villi', 'SP136_022v',
 'SP136_023v'])
-
 
 #Rename a/c to the Extended table of the manuscript: 
 adata_hvg.obs['donor_id_renamed'] = (adata_hvg.obs["donor_id_reordered"].map(lambda x: {"Donor-17025-villi": "17-025-v",
@@ -139,7 +118,6 @@ adata_hvg.obs['donor_id_reordered']= adata_hvg.obs['donor_id_renamed'].cat.reord
 "17-022-v", "17-021-v", "18-082-01-v", "18-108-02-v", "18-032-v", "18-017-v", "18-033-v", "18-098-v", 
 "20-027-v", "327-v",  "328-v", "372-v", "TRM1-v", "TRM2-v", "TRM3-v", "389-v", "419-v", 
 "577-1-v", "577-2-v", "M181-v", "PLA120-v"])
-
 
 
 #Barplots for each patient to visualize the cell type composition:
@@ -198,8 +176,6 @@ def make_bar_plots(adata, anno_groupby = 'time',
 
 
 
-
-
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -211,14 +187,8 @@ make_bar_plots(adata_hvg, anno_pointdef = 'donor_id_reordered')
 #Since vFB2 & vEB2 are coming from single donors respectively, it's better to filter them out from further analysis. 
 adata_filter= adata_hvg[~adata_hvg.obs['celltype_v1'].isin(['vFB2', 'vEB2'])]
 adata_filter.obs['celltype_v1'].cat.categories
-
-
-
 patient_ids = adata_filter.obs['donor_id_reordered'].unique()
 print(patient_ids) 
-
-
-# In[68]:
 
 
 #Copy the make_bar_plots() function: 
@@ -276,7 +246,6 @@ def make_bar_plots(adata, anno_groupby = 'time',
 make_bar_plots(adata_filter, anno_pointdef = 'donor_id_reordered')
 
 
-
 #Split by library (10X V3 vs 10X V2) post filtering vFB2 & vEB2: 
 for i in adata_filter.obs['library'].cat.categories:
     print(i) 
@@ -292,12 +261,9 @@ for i in adata_filter.obs['donor_id_reordered'].cat.categories:
 
 
 adata_scvi= adata_hvg.copy()
-
 del adata_scvi.obsm['_scvi_extra_categoricals']
 del adata_scvi.obsm['_scvi_extra_continuous']
 del adata_scvi.obsm['X_normalized_scVI']
-
-
 
 #Write the results:
 #Foundation of the final analysis performed on whole placenta dataset: 
@@ -306,20 +272,14 @@ adata_scvi.write(results_scvi)
 
 ##Important note (after September'22): Old path /data/analysis/preeclampsia_2019/.. is changed to /dh-projects/preeclampsia_2022/analysis/placenta_atlas_2022/villi_anndata for storage in Eils-HPC cluster. 
 
-
-
 #Print the cell type composition of control samples (finalized upon trajectory analysis)
 adata_scvi[adata_scvi.obs['disease']== 'C'].obs['celltype_v1'].value_counts()
-
-
 
 #Compute cell markers- Naive Bayes method implemented in scVI ("change_mode"): 
 #Reference: Deep Generative Models for Detecting Differential Expression in Single Cells (https://www.biorxiv.org/content/biorxiv/early/2019/10/04/794289.full.pdf)  
 de_df = vae_lv15.differential_expression(groupby= "celltype_v1")
 de_df.to_csv('./scvi_bayes_markers_2103/Placenta_Bayes_corr_celltypev1.csv')
 de_df.head()
-
-
 
 #Filter vFB2 & vEB2 from the markers data-frame:
 options= ['vFB2', 'vEB2']
@@ -341,7 +301,6 @@ for i, c in enumerate(cats):
     markers[c] = cell_type_df
     
 pd.concat(markers).to_csv('./scvi_bayes_markers_2103/Placenta_celltypev1_Bayes3_lfc1_pct25_210322.csv')
-
 
 
 #Store the filtered DEG upon increasing the "non_zeros_proportion1" (or, percentage of cells expressing a DEG) to 30%. 
@@ -375,24 +334,16 @@ cell_markers= ['GREM2', 'ESRRG', 'ERVFRD-1', 'GATA3', 'TACC2', 'PEG10', 'PARP1',
 sc.pl.dotplot(adata_filter, cell_markers, groupby='celltype_v1', dendrogram=False, 
               color_map="Blues", use_raw=True, standard_scale="var") #Expression scaled from 0-1 for visualization. 
 
-
-
-
 #Convert to full-length dataset: 
 ldata_norm_int= adata_filter.raw.to_adata()
 sc.pp.normalize_total(ldata_norm_int, target_sum=1e4)
 sc.pp.log1p(ldata_norm_int) #Log-transform. 
-
-
 
 #Reorder the renamed/existing categories:
 adata_filter.obs['celltype_v1_reordered']= adata_filter.obs['celltype_v1'].cat.reorder_categories(['vVCT_prol', 'vVCT', 'APAhi_tropho',
     'vSCTjuv', 'vSCT_1', 'vSCT_2', 'vEVT', 'vFB1', 'vMC', 'vVEC', 'vHBC', 'PAMM', 'vTcell', 'vEB1'])
 
 adata_filter.obs['celltype_v1_reordered'].cat.categories
-
-
-
 
 cell_markers= ['GREM2', 'ESRRG', 'ERVFRD-1', 'ERVV-1', 'PEG10', 'PARP1', 'FRAS1', 'TP63', 'YAP1', 'PBX1', 
                'MKI67', 'TOP2A', 'POLQ','ATAD2', 'CENPE', 'CENPK', 'CGA', 'CSH1', 'CSH2', 'TFPI2', 'ALPP', 
@@ -406,11 +357,9 @@ cell_markers= ['GREM2', 'ESRRG', 'ERVFRD-1', 'ERVV-1', 'PEG10', 'PARP1', 'FRAS1'
                'HBZ', 'HBA1', 'HBA2', 'EPB41', 'ACSM3', 'TRAK2', 'NARF', 'MICAL2']
 
 
-
-#Re-plot: 
+#Re-plot the cell markers: 
 sc.pl.dotplot(adata_filter, cell_markers, groupby='celltype_v1_reordered', dendrogram=False, 
               color_map="Blues", use_raw=True, standard_scale="var", save= '_placenta_markers_2103_v1.pdf')
-
 
 
 #Check robustness by fine-tuning the n_neighbors parameter: 
@@ -429,7 +378,6 @@ sc.tl.umap(ldata_umap01, random_state=0)
 sc.pl.umap(ldata_umap01, color= ['celltype_v1'])
 
 
-
 adata_scvi= ldata_umap.copy() #Create a copy. 
 adata_scvi.raw.X #double check the dimension 
 sc.pl.umap(adata_scvi, color= ['celltype_v1'])
@@ -441,8 +389,7 @@ adata_scvi.write(results_scvi)
 del adata_scvi.obsm['X_normalized_scVI']
 
 
-#Repeat the filtering steps: 
-#Remove vFB2/vEB2 as explained above: 
+#Repeat the filtering steps to remove vFB2/vEB2 as explained above: 
 adata_filter= ldata_umap[~ldata_umap.obs['celltype_v1'].isin(['vFB2', 'vEB2'])]
 sc.pl.umap(adata_filter, color= ['celltype_v1'])
 
@@ -469,7 +416,6 @@ adata_villi= sc.read_h5ad(results_scvi)
 ldata_norm_int= adata_villi.raw.to_adata() #Convert to full-length matrix. 
 sc.pp.normalize_total(ldata_norm_int, target_sum=1e4) #Normalize. 
 sc.pp.log1p(ldata_norm_int) #take the logarithm (log1p)
-
 
 
 #Subset vSTB subgroups: 
@@ -598,15 +544,10 @@ adata_filter.uns['leiden_subclusters_refined_colors']= ['#ff0000', '#c0c999', '#
 #Plot refined annotations after filtering out FB2/EB2: 
 sc.pl.umap(adata_filter[~adata_filter.obs['leiden_subclusters_refined'].isin(['vEB2', 'vFB2'])], color= ['leiden_subclusters_refined'], frameon=False, legend_fontsize=8)
 
-
-
 #Generate figures & save as PDF:
 sc.pl.umap(adata_filter[~adata_filter.obs['leiden_subclusters_refined'].isin(['vEB2', 'vFB2'])], 
            color= ['leiden_subclusters_refined'], 
            frameon=False, legend_fontsize=8, save= '_placenta_umap_final_240322.pdf')
-
-
-
 
 adata_filter02= adata_filter[~adata_filter.obs['leiden_subclusters_refined'].isin(['vEB2', 'vFB2'])]
 
