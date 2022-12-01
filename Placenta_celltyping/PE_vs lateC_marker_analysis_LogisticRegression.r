@@ -43,6 +43,7 @@ table(Idents(nkc_obj_receiver))
 #Compute a score of preterm/labor specific features to adjust the confounding factors from analysis:
 #We've particularly used features explained by Pique-Regi etl.al 2019(doi:10.7554/eLife.52004)
 #Selected features were discussed with Dr. Olivia Nonn (04.04.2022)
+#Since the maternal decidua is female, correction for Y-genes isn't required. 
 nkc_obj_receiver <- PercentageFeatureSet(object = nkc_obj_receiver, features = c("SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2",
 "IGFBP2", "HLA-DRB5", "HLA-DPB1"), col.name = 'NK_preterm_features')
 
@@ -111,6 +112,28 @@ mac2_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, id
                                             "MALAT1", "percent.mt"), test.use= "LR") %>% rownames_to_column("gene")
 write.csv(mac2_list, file= "./PE_decidua_markers_logreg/dMAC2_PE_vs_lateC_preterm_corrected_040422.csv")
 
+#Subset dMono1 (or, dMono_LYZ):
+receiver = "dMono_LYZ" #renamed as dMono1 in the manuscript.
+seurat_obj_receiver= subset(data, idents = receiver)
+seurat_obj_receiver = SetIdent(seurat_obj_receiver, value = seurat_obj_receiver[["time"]])
+seurat_obj_receiver
+table(Idents(seurat_obj_receiver))
+
+#Calculate score using dMono/MAC based preterm & labor features:
+dMono_preterm_features= c("CLDN5", "CD3E", "LILRB5", "FILIP1L", "RORA", "MMP19", "CD163", "SOD2", "BIRC3","SDC4", "ARL4C", "KDM6B", "ANGPTL4", "B4GALT1",
+"JUND", "NFKB1", "PDE4B", "B4GALT1", "JUND", "NFKB1", "PDE4B", "MAFF", "NAMPT", "CD55", "C1QA", "CFLAR", "LMNA", "SAMSN1", "TIPARP", "CCNL1", "FABP5",
+"LDHB", "LSP1", "SPINT1", "HSPA6", "MATK", "SMAGP", "COL1A2", "COL5A1", "MMP2", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3",
+"DSG2", "TPSAB1", "SPP1")
+seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = dMono_preterm_features,
+  col.name = 'dMono_preterm_features')
+
+#dMono1 DEGs:
+mono_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
+                        logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST", "dMono_preterm_features",
+                        "MALAT1", "percent.mt"), test.use= "LR") %>% rownames_to_column("gene")
+write.csv(mono_list, file= "./PE_decidua_markers_logreg/dMono_LYZ_PE_vs_lateC_preterm_corrected_040422.csv")
+#write.csv(mono_list, file= "./PE_decidua_markers_logreg/dMono1_PE_vs_lateC_preterm_corrected_040422.csv")
+
 #Subset dTcells:
 receiver = "dTcell"
 seurat_obj_receiver= subset(data, idents = receiver)
@@ -137,7 +160,7 @@ table(Idents(seurat_obj_receiver))
 
 #Stromal preterm/labor score:
 stromal_preterm_features= c("PLAC8", "ZBTB16", "IFI27", "SERPINE1", "SOD2", "PTGDS", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB",
-"GDPD3", "DSG2", "OLFML3", "MT2A")
+"GDPD3", "DSG2", "OLFML3", "MT2A") #ESAM is a drop-out in our dataset. 
 seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = stromal_preterm_features,
   col.name = 'stromal_preterm_features')
 
@@ -146,7 +169,6 @@ dsc1_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, id
             logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA",  "XIST", "stromal_preterm_features",  "MALAT1", "percent.mt"),
             test.use= "LR") %>% rownames_to_column("gene")
 write.csv(dsc1_list, file= "./PE_decidua_markers_logreg/DSC1_PE_vs_lateC_preterm_corrected_040422.csv")
-
 
 #Subset DSC_2:
 receiver = "DSC2"
@@ -157,7 +179,7 @@ table(Idents(seurat_obj_receiver))
 
 #Stromal preterm/labor score (same as DSC1):
 stromal_preterm_features= c("PLAC8", "ZBTB16", "IFI27", "SERPINE1", "SOD2", "PTGDS", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB",
-"GDPD3", "DSG2", "OLFML3", "MT2A")
+"GDPD3", "DSG2", "OLFML3", "MT2A") #ESAM is a drop-out in our dataset. 
 seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = stromal_preterm_features, col.name = 'stromal_preterm_features')
 
 #DSC2 DEG list:
@@ -166,88 +188,6 @@ dsc2_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, id
             test.use= "LR") %>% rownames_to_column("gene")
 
 write.csv(dsc2_list, file= "./PE_decidua_markers_logreg/DSC2_PE_vs_lateC_preterm_corrected_040422.csv")
-
-#Subset dVEC:
-receiver = "dVEC"
-seurat_obj_receiver= subset(data, idents = receiver)
-seurat_obj_receiver = SetIdent(seurat_obj_receiver, value = seurat_obj_receiver[["time"]])
-seurat_obj_receiver
-table(Idents(seurat_obj_receiver))
-
-#LED preterm genes in Pique-Regi don't apply to dVEC- so, we prefer not to correct for them.
-stromal_preterm_features= c("PLAC8", "ZBTB16", "IFI27", "SERPINE1", "SOD2", "PTGDS", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB",
-"GDPD3", "DSG2", "OLFML3", "MT2A")
-seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = stromal_preterm_features, col.name = 'stromal_preterm_features')
-
-#DEGs dVEC:
-vec_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
-           logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST",  "MALAT1", "percent.mt", "stromal_preterm_features"),
-           test.use= "LR") %>% rownames_to_column("gene")
-
-#Save another file by running FindMarkers() without using the "stromal_preterm_features" as a covariate. The rest variables should stay.
-write.csv(vec_list, file= "./PE_decidua_markers_logreg/dVEC_PE_vs_lateC_preterm_corrected_110422.csv")
-
-#Subset dLEC:
-receiver = "dLEC"
-seurat_obj_receiver= subset(data, idents = receiver)
-seurat_obj_receiver = SetIdent(seurat_obj_receiver, value = seurat_obj_receiver[["time"]])
-seurat_obj_receiver
-table(Idents(seurat_obj_receiver))
-
-#Extract the LED preterm & labor signatures from Pique-Regi:
-#led_features= c("FGL2", "EDN1", "OLFML3", "TXNRD2", "ANKRD1", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2")
-led_features= c("FGL2", "EDN1", "OLFML3", "TXNRD2", "ANKRD1")
-seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = led_features,
-  col.name = 'led_preterm_features')
-
-#DEGs dLEC:
-lec_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
-           logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST",  "MALAT1", "percent.mt", "led_preterm_features"),
-                            test.use= "LR") %>% rownames_to_column("gene")
-
-write.csv(lec_list, file= "./PE_decidua_markers_logreg/dLEC_PE_vs_lateC_preterm_corrected_040422.csv")
-
-#Subset dLECp (proliferating LEC having STMN1/MKI67 positive cells):
-receiver = "dLECp"
-seurat_obj_receiver= subset(data, idents = receiver)
-seurat_obj_receiver = SetIdent(seurat_obj_receiver, value = seurat_obj_receiver[["time"]])
-seurat_obj_receiver
-table(Idents(seurat_obj_receiver))
-
-#Extract the LED preterm/labor signatures from Pique-Regi (used for both dLEC & dLECp):
-led_features= c("FGL2", "EDN1", "OLFML3", "TXNRD2", "ANKRD1", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2")
-seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = led_features,
-  col.name = 'led_preterm_features')
-
-#DEGs dLECp:
-lecp_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
-           logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST",  "MALAT1", "percent.mt", "led_preterm_features"),
-                            test.use= "LR") %>% rownames_to_column("gene")
-
-write.csv(lecp_list, file= "./PE_decidua_markers_logreg/dLECp_PE_vs_lateC_preterm_corrected_040422.csv")
-
-#Subset dMono1 (or, dMono_LYZ):
-receiver = "dMono_LYZ" #renamed as dMono1 in the manuscript.
-seurat_obj_receiver= subset(data, idents = receiver)
-seurat_obj_receiver = SetIdent(seurat_obj_receiver, value = seurat_obj_receiver[["time"]])
-seurat_obj_receiver
-table(Idents(seurat_obj_receiver))
-
-#Calculate score using dMono/MAC based preterm & labor features:
-dMono_preterm_features= c("CLDN5", "CD3E", "LILRB5", "FILIP1L", "RORA", "MMP19", "CD163", "SOD2", "BIRC3","SDC4", "ARL4C", "KDM6B", "ANGPTL4", "B4GALT1",
-"JUND", "NFKB1", "PDE4B", "B4GALT1", "JUND", "NFKB1", "PDE4B", "MAFF", "NAMPT", "CD55", "C1QA", "CFLAR", "LMNA", "SAMSN1", "TIPARP", "CCNL1", "FABP5",
-"LDHB", "LSP1", "SPINT1", "HSPA6", "MATK", "SMAGP", "COL1A2", "COL5A1", "MMP2", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3",
-"DSG2", "TPSAB1", "SPP1")
-seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = dMono_preterm_features,
-  col.name = 'dMono_preterm_features')
-
-#dMono1 DEGs:
-mono_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
-                        logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST", "dMono_preterm_features",
-                        "MALAT1", "percent.mt"), test.use= "LR") %>% rownames_to_column("gene")
-write.csv(mono_list, file= "./PE_decidua_markers_logreg/dMono_LYZ_PE_vs_lateC_preterm_corrected_040422.csv")
-#write.csv(mono_list, file= "./PE_decidua_markers_logreg/dMono1_PE_vs_lateC_preterm_corrected_040422.csv")
-
 
 #Subset dFB1:
 receiver = "dFB1"
@@ -286,6 +226,56 @@ fb2_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ide
 
 write.csv(fb2_list, file= "./PE_decidua_markers_logreg/dFB2_PE_vs_lateC_preterm_corrected_040422.csv")
 
+#Subset dVEC:
+receiver = "dVEC"
+seurat_obj_receiver= subset(data, idents = receiver)
+seurat_obj_receiver = SetIdent(seurat_obj_receiver, value = seurat_obj_receiver[["time"]])
+seurat_obj_receiver
+table(Idents(seurat_obj_receiver))
+#LED preterm genes in Pique-Regi don't apply to dVEC- so, we prefer not to correct for them. 
+seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = c("PLAC8", "ZBTB16", "IFI27", "SERPINE1", "SOD2", "PTGDS", "OLFML3", "GKN1", "GLNT6"), 
+                                            col.name = 'stromal_preterm_features')
+
+#DEGs dVEC:
+vec_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
+           logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST",  "MALAT1", "percent.mt", "stromal_preterm_features"),
+           test.use= "LR") %>% rownames_to_column("gene")
+
+#Save another file by running FindMarkers() without using the "stromal_preterm_features" as a covariate. The rest variables should stay.
+write.csv(vec_list, file= "./PE_decidua_markers_logreg/dVEC_PE_vs_lateC_preterm_corrected_040422.csv")
+
+#Case-II: Correcting for both stromal/LED don't cause major changes. File can be updated during revision. Alternatively, just correcting for core decidual genes is okay. 
+seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = c("PLAC8", "ZBTB16", "IFI27", "SERPINE1", "SOD2", "PTGDS"), 
+                                            col.name = 'stromal_preterm_features') #DCN is a FB feature, so it's unused. 
+seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = c("FGL2", "EDN1", "OLFML3", "TXNRD2", "ANKRD1", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", 
+                "ARHGDIB", "GDPD3", "DSG2"), col.name = 'led_preterm_features')
+
+vec_updated_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
+           logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST",  "MALAT1", "percent.mt", "stromal_preterm_features", "led_preterm_features"),
+           test.use= "LR") %>% rownames_to_column("gene")
+
+#Subset dLEC:
+receiver = "dLEC"
+seurat_obj_receiver= subset(data, idents = receiver)
+seurat_obj_receiver = SetIdent(seurat_obj_receiver, value = seurat_obj_receiver[["time"]])
+seurat_obj_receiver
+table(Idents(seurat_obj_receiver))
+
+#Extract the LED preterm & labor signatures from Pique-Regi:
+stromal_features= c("PLAC8", "ZBTB16", "IFI27", "SERPINE1", "SOD2", "PTGDS")
+seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = stromal_features, col.name = 'stromal_preterm_features')
+
+#led_features= c("FGL2", "EDN1", "OLFML3", "TXNRD2", "ANKRD1") #add the decidual preterm genes including GKN1. 
+led_features= c("FGL2", "EDN1", "OLFML3", "TXNRD2", "ANKRD1", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2", "MT2A")
+seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = led_features, col.name = 'led_preterm_features')
+
+#DEGs dLEC:
+lec_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
+           logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST",  "MALAT1", "percent.mt", "led_preterm_features", "stromal_preterm_features"),
+                            test.use= "LR") %>% rownames_to_column("gene")
+
+write.csv(lec_list, file= "./PE_decidua_markers_logreg/dLEC_PE_vs_lateC_preterm_corrected_040422.csv") #update Florian. 
+
 #Subset dSMC:
 receiver = "dSMC"
 seurat_obj_receiver= subset(data, idents = receiver)
@@ -294,11 +284,12 @@ seurat_obj_receiver
 table(Idents(seurat_obj_receiver))
 
 #FB preterm/labor features would apply to dSMC as well. 
-fb_preterm_features= c("PLAC8", "ZBTB16", "IFI27", "SERPINE1", "SOD2", "PTGDS", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2", "OLFML3", "MT2A", "DCN")
-seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = fb_preterm_features, col.name = 'fb_preterm_features')
+#fb_preterm_features= c("PLAC8", "ZBTB16", "IFI27", "SERPINE1", "SOD2", "PTGDS", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2", "OLFML3", "MT2A", "DCN")
+smc_features= c("SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2", "OLFML3", "MT2A",  "DCN", "IGF1")
+seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = smc_features, col.name = 'smc_preterm_features')
 
 smc_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
-           logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA",  "XIST", "fb_preterm_features", "MALAT1", "percent.mt"),
+           logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA",  "XIST", "smc_preterm_features", "MALAT1", "percent.mt"),
            test.use= "LR") %>% rownames_to_column("gene")
 #Need to double check this file in publication folder or, update Florian about it. 
 write.csv(smc_list, file= "./PE_decidua_markers_logreg/dSMC_PE_vs_lateC_preterm_corrected_040422.csv")
