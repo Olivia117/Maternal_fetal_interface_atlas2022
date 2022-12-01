@@ -366,7 +366,7 @@ head(stb2_list)
 write.csv(stb2_list, file= "./PE_decidua_markers_logreg/vSTB2_PE_vs_lateC_preterm_corrected_040422.csv")
 
 #Subset vSCT_juv (named as vSTBjuv in the manuscript):
-receiver = "vSCT_juv"
+receiver = "vSCTjuv"
 seurat_obj_receiver= subset(data, idents = receiver)
 Idents(seurat_obj_receiver) <- "donor_id"
 seurat_obj_receiver= subset(seurat_obj_receiver, idents= "Donor-557_2-villi", invert=TRUE) #remove the technical replicate 557_2.
@@ -380,7 +380,7 @@ seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, featur
 #Since a villi can be either a male or a female, correcting for Y-genes is strongly recommended to prevent gender-specific bias in analysis.
 juv_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
             logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST", "tropho_preterm_features", "MALAT1", "percent.mt", "pct_chrY"),
-            test.use= "LR") %>% rownames_to_column("gene")
+            test.use= "LR", max.cells.per.ident=540) %>% rownames_to_column("gene")
 
 head(juv_list)
 write.csv(juv_list, file= "./PE_decidua_markers_logreg/vSTBjuv_PE_vs_lateC_preterm_corrected_040422.csv")
