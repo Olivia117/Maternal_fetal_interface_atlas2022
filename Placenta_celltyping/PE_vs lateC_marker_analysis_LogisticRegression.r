@@ -254,7 +254,7 @@ vec_updated_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition
            logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST",  "MALAT1", "percent.mt", "stromal_preterm_features", "led_preterm_features"),
            test.use= "LR") %>% rownames_to_column("gene")
 
-#Subset dLEC:
+#Subset dLEC (or, dLECp):
 receiver = "dLEC"
 seurat_obj_receiver= subset(data, idents = receiver)
 seurat_obj_receiver = SetIdent(seurat_obj_receiver, value = seurat_obj_receiver[["time"]])
@@ -262,16 +262,12 @@ seurat_obj_receiver
 table(Idents(seurat_obj_receiver))
 
 #Extract the LED preterm & labor signatures from Pique-Regi:
-stromal_features= c("PLAC8", "ZBTB16", "IFI27", "SERPINE1", "SOD2", "PTGDS")
-seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = stromal_features, col.name = 'stromal_preterm_features')
-
-#led_features= c("FGL2", "EDN1", "OLFML3", "TXNRD2", "ANKRD1") #add the decidual preterm genes including GKN1. 
-led_features= c("FGL2", "EDN1", "OLFML3", "TXNRD2", "ANKRD1", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2", "MT2A")
+led_features= c("FGL2", "EDN1", "OLFML3", "TXNRD2", "ANKRD1", "SLC30A2", "GKN1", "SERPINE2", "GALNT6", "MYOZ1", "ARHGDIB", "GDPD3", "DSG2")
 seurat_obj_receiver <- PercentageFeatureSet(object = seurat_obj_receiver, features = led_features, col.name = 'led_preterm_features')
 
 #DEGs dLEC:
 lec_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
-           logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST",  "MALAT1", "percent.mt", "led_preterm_features", "stromal_preterm_features"),
+           logfc.threshold=0.25, latent.vars= c("nCount_RNA", "XIST",  "MALAT1", "percent.mt", "led_preterm_features", "nGenes"),
                             test.use= "LR") %>% rownames_to_column("gene")
 
 write.csv(lec_list, file= "./PE_decidua_markers_logreg/dLEC_PE_vs_lateC_preterm_corrected_040422.csv") #update Florian. 
