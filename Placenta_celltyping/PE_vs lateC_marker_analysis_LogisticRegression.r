@@ -435,12 +435,15 @@ hbc_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ide
             logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST", "MALAT1", "percent.mt", "pct_chrY"),
             test.use= "LR", max.cells.per.ident=548) %>% rownames_to_column("gene") #downsampled as reduction in #cells in PE is significant (FDR < 0.05)
 
-#Results are not affected in any major way without downsampling.
+#Results are not affected in any major way without downsampling. Save the results without too (since, higher #cells might indicate disease relevance).
+hbc_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
+            logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST", "MALAT1", "percent.mt", "pct_chrY"),
+            test.use= "LR") %>% rownames_to_column("gene")
 head(hbc_list)
 write.csv(hbc_list, file= "./PE_decidua_markers_logreg/vHBC_PE_vs_lateC_preterm_corrected_040422.csv")
 
 #Subset vPAMM:
-receiver = "vPAMM"
+receiver = "vPAMM" 
 seurat_obj_receiver= subset(data, idents = receiver)
 Idents(seurat_obj_receiver) <- "donor_id"
 seurat_obj_receiver= subset(seurat_obj_receiver, idents= "Donor-557_2-villi", invert=TRUE) #remove the technical replicate 557_2.
@@ -449,6 +452,7 @@ seurat_obj_receiver
 table(Idents(seurat_obj_receiver))
 
 #Since a villi can be either a male or a female, correcting for Y-genes is strongly recommended to prevent gender-specific bias in analysis.
+#Correction for dMAC_preterm genes (decidual) from Pique-Regi didn't have a major influence here. 
 pamm_list = FindMarkers(object = seurat_obj_receiver, ident.1 = condition_oi, ident.2 = condition_reference, min.pct = 0.10,
             logfc.threshold=0.25, latent.vars= c("nCount_RNA", "nFeature_RNA", "XIST", "MALAT1", "percent.mt", "pct_chrY"),
             test.use= "LR") %>% rownames_to_column("gene")
